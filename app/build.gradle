@@ -1,15 +1,16 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.sportscoreboard"
         minSdk 27
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -59,4 +60,19 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    def koinVersion = "3.1.5"
+    implementation "io.insert-koin:koin-android:${koinVersion}"
+    implementation("io.insert-koin:koin-androidx-compose:${koinVersion}")
+
+    def retrofitVersion = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+
+    def okHttpVersion = "4.10.0"
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+
+    def moshiVersion = "1.14.0"
+    implementation "com.squareup.moshi:moshi:${moshiVersion}"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:${moshiVersion}"
 }
