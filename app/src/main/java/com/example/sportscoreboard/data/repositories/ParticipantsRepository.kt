@@ -11,7 +11,6 @@ class ParticipantsRepository(private val apiDescription: ParticipantsApiDescript
     fun getALlScores(): Flow<ResultState<List<Participant>>> {
         return flow {
             emit(ResultState.Loading(isLoading = true))
-            delay(3000)
             val response = apiDescription.getAllScores()
             if(response.isSuccessful){
                 emit(ResultState.Success(response.body()))

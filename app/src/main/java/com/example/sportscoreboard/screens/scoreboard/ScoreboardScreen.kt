@@ -13,9 +13,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.Participant
 import org.koin.androidx.compose.viewModel
@@ -107,7 +109,16 @@ fun ParticipantView(participant: Participant){
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(5.dp)
     ){
-        Text(participant.name)
+        var model:Any = participant.defaultImageSource
+        if(participant.images.isNotEmpty())
+            model = participant.getImagePath(0)
+
+        AsyncImage(model = model,
+            contentDescription = null,
+            error = painterResource(id = participant.defaultImageSource),
+            modifier = Modifier.height(25.dp))
+        Text(participant.name, Modifier.padding(horizontal = 20.dp))
     }
 }

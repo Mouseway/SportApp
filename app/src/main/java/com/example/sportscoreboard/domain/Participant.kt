@@ -2,6 +2,7 @@ package com.example.sportscoreboard.domain
 
 
 import com.example.sportscoreboard.R
+import com.example.sportscoreboard.others.Constants
 
 sealed class Participant(
     val name: String,
@@ -29,4 +30,10 @@ sealed class Participant(
         images = _images,
         defaultImageSource = if(gender == "Women") R.drawable.player_woman else R.drawable.player_man
     )
+
+    fun getImagePath(index: Int): String {
+        if(index in images.indices)
+            return Constants.API_IMAGE_PATH + images[index]
+        throw IllegalArgumentException()
+    }
 }
