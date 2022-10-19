@@ -2,17 +2,19 @@ package com.example.sportscoreboard.screens.scoreboard
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -20,22 +22,37 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.Participant
+import com.example.sportscoreboard.others.composable.Searchbar
 import org.koin.androidx.compose.viewModel
 
 @Composable
 fun ScoreboardScreen() {
     val viewModel by viewModel<ScoreboardViewModel>()
     val scoreRecords = viewModel.scoreRecords.observeAsState()
+    val focusManager = LocalFocusManager.current
 
     Scaffold(topBar = {
-        TopAppBar() {
-            
+        TopAppBar(backgroundColor = MaterialTheme.colors.primary) {
+            Column {
+                Searchbar(viewModel.searchedText,
+                    onSearchClick = {
+                        focusManager.clearFocus()
+                    },
+                    onTextChange = {viewModel.setSearchedText(it)}
+                )
+            }
         }
     }) { padding ->
         Box(
             Modifier
                 .padding(padding)
-                .fillMaxSize()){
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                }
+        ){
             Column(
                 Modifier
                     .padding(top = 10.dp)
@@ -43,7 +60,7 @@ fun ScoreboardScreen() {
                     .verticalScroll(rememberScrollState())) {
                 scoreRecords.value?.let {
                     when(it){
-                        is ResultState.Error -> Log.i("Scoreboard", "Error")
+                        is ResultState.Error -> Log.i("Scoreboard", it.message ?: "Error")
                         is ResultState.Loading -> if(it.isLoading)  LoadingScreen()
                         is ResultState.Success -> it.data?.let { it1 -> ScoreRecordsList(records = it1) }
                     }
@@ -79,7 +96,7 @@ fun ScoreRecordsList(records: List<Participant>){
             SportHeader(sport = sport)
             Column(Modifier.padding(10.dp)) {
                 list.forEach {
-                    ParticipantView(participant = it)
+                    ParticipantPreview(participant = it)
                 }
             }
         }
@@ -105,7 +122,7 @@ fun SportHeader(sport: String){
 }
 
 @Composable
-fun ParticipantView(participant: Participant){
+fun ParticipantPreview(participant: Participant){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -118,7 +135,9 @@ fun ParticipantView(participant: Participant){
         AsyncImage(model = model,
             contentDescription = null,
             error = painterResource(id = participant.defaultImageSource),
-            modifier = Modifier.height(25.dp))
-        Text(participant.name, Modifier.padding(horizontal = 20.dp))
+            modifier = Modifier.height(30.dp))
+
+        Text(text = participant.name, fontSize = 15.sp, modifier = Modifier.padding(horizontal = 20.dp))
     }
 }
+

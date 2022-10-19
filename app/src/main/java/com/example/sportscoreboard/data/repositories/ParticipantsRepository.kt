@@ -8,10 +8,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class ParticipantsRepository(private val apiDescription: ParticipantsApiDescription) {
-    fun getALlScores(): Flow<ResultState<List<Participant>>> {
+
+    fun getFilteredParticipants(text: String): Flow<ResultState<List<Participant>>> {
         return flow {
             emit(ResultState.Loading(isLoading = true))
-            val response = apiDescription.getAllScores()
+            val response = apiDescription.getFilteredParticipants(text)
             if(response.isSuccessful){
                 emit(ResultState.Success(response.body()))
             }else{

@@ -11,18 +11,18 @@ class ParticipantAdapter {
         return when(participant.type?.id){
             ParticipantFilter.CONTEST.id -> Participant.Contest(
                 _name = participant.name,
-                _sport = participant.sport.name,
-                _images = participant.images.map { it.path }
+                _sport = participant.sport.name ?: "",
+                _images = participant.images.mapNotNull { it.path }
             )
             ParticipantFilter.TEAM.id -> Participant.Team(
                 _name = participant.name,
-                _sport = participant.sport.name,
-                _images = participant.images.map { it.path }
+                _sport = participant.sport.name ?: "",
+                _images = participant.images.mapNotNull { it.path }
             )
             else ->Participant.Player(
                 _name = participant.name,
-                _sport = participant.sport.name,
-                _images = participant.images.map { it.path },
+                _sport = participant.sport.name ?: "",
+                _images = participant.images.mapNotNull { it.path },
                 gender = participant.gender?.name ?: ""
             )
         }
