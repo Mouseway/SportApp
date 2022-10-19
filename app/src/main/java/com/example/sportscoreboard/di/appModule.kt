@@ -3,7 +3,7 @@ package com.example.sportscoreboard.di
 import com.example.sportscoreboard.data.remote.adapters.ParticipantAdapter
 import com.example.sportscoreboard.data.remote.apiDescriptions.ParticipantsApiDescription
 import com.example.sportscoreboard.data.repositories.ParticipantsRepository
-import com.example.sportscoreboard.screens.scoreboard.ScoreboardViewModel
+import com.example.sportscoreboard.screens.scoreboard.ParticipantsViewModel
 import com.squareup.moshi.Moshi
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -34,6 +34,6 @@ val appModule = module {
     }
 
     viewModel {
-        ScoreboardViewModel(repository = get())
+        ParticipantsViewModel(repository = get())
     }
 }

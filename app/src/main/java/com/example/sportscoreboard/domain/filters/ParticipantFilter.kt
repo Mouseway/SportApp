@@ -1,5 +1,5 @@
 package com.example.sportscoreboard.domain.filters
 
-enum class ParticipantFilter(val id: Int) {
-    CONTEST(1), TEAM(2), SINGLE_PLAYER(3), TEAM_PLAYER(4)
+enum class ParticipantFilter(val id: Int, val title: String) {
+    ALL(0, title = "Vše"), CONTEST(1, title = "Soutěž"), TEAM(2, title = "Tým"), SINGLE_PLAYER(3, title = "Hráč")
 }

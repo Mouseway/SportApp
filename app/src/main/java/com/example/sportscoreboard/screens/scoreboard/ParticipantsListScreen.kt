@@ -22,24 +22,33 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.Participant
+import com.example.sportscoreboard.domain.filters.ParticipantFilter
 import com.example.sportscoreboard.others.composable.Searchbar
 import org.koin.androidx.compose.viewModel
 
 @Composable
-fun ScoreboardScreen() {
-    val viewModel by viewModel<ScoreboardViewModel>()
+fun ParticipantsListScreen() {
+    val viewModel by viewModel<ParticipantsViewModel>()
     val scoreRecords = viewModel.scoreRecords.observeAsState()
     val focusManager = LocalFocusManager.current
 
     Scaffold(topBar = {
-        TopAppBar(backgroundColor = MaterialTheme.colors.primary) {
-            Column {
+        Column(modifier = Modifier.background(MaterialTheme.colors.primary)) {
+            TopAppBar() {
                 Searchbar(viewModel.searchedText,
                     onSearchClick = {
                         focusManager.clearFocus()
                     },
                     onTextChange = {viewModel.setSearchedText(it)}
                 )
+            }
+            Row(Modifier.padding(horizontal = 5.dp)) {
+                ParticipantFilter.values().forEach {
+                    ParticipantTypeChip(
+                        text = it.title,
+                        onClick = { viewModel.setParticipantType(it) },
+                        selected = (viewModel.participantType == it))
+                }
             }
         }
     }) { padding ->
@@ -80,8 +89,6 @@ fun LoadingScreen(){
         )
     }
 }
-
-
 
 
 @Composable
@@ -138,6 +145,26 @@ fun ParticipantPreview(participant: Participant){
             modifier = Modifier.height(30.dp))
 
         Text(text = participant.name, fontSize = 15.sp, modifier = Modifier.padding(horizontal = 20.dp))
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ParticipantTypeChip(text: String, onClick: ()->Unit, selected: Boolean){
+    FilterChip(
+        selected = selected,
+        onClick = { onClick() },
+        colors = ChipDefaults.filterChipColors(
+            backgroundColor = MaterialTheme.colors.onPrimary,
+            selectedBackgroundColor = MaterialTheme.colors.secondary
+        ),
+        shape = RoundedCornerShape(10.dp),
+        modifier = Modifier.padding(horizontal = 5.dp)
+    ) {
+        Text(
+            text = text,
+            color = if(selected) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
+        )
     }
 }
 
