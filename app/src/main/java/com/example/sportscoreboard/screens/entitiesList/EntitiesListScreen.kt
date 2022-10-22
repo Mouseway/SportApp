@@ -1,7 +1,8 @@
-package com.example.sportscoreboard.screens.scoreboard
+package com.example.sportscoreboard.screens.entitiesList
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,21 +20,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.Participant
 import com.example.sportscoreboard.domain.filters.ParticipantFilter
+import com.example.sportscoreboard.navigation.NavigationScreens
 import com.example.sportscoreboard.others.composable.Searchbar
+import com.squareup.moshi.JsonAdapter
+import org.koin.androidx.compose.inject
 import org.koin.androidx.compose.viewModel
 
 @Composable
-fun ParticipantsListScreen() {
-    val viewModel by viewModel<ParticipantsViewModel>()
+fun ParticipantsListScreen(navController: NavController) {
+    val viewModel by viewModel<EntitiesViewModel>()
     val scoreRecords = viewModel.scoreRecords.observeAsState()
     val focusManager = LocalFocusManager.current
+    val entityAdapter: JsonAdapter<Participant> by inject()
 
     Scaffold(topBar = {
-        Column(modifier = Modifier.background(MaterialTheme.colors.primary)) {
+        Column() {
             TopAppBar() {
                 Searchbar(viewModel.searchedText,
                     onSearchClick = {
@@ -71,7 +77,10 @@ fun ParticipantsListScreen() {
                     when(it){
                         is ResultState.Error -> Log.i("Scoreboard", it.message ?: "Error")
                         is ResultState.Loading -> if(it.isLoading)  LoadingScreen()
-                        is ResultState.Success -> it.data?.let { it1 -> ScoreRecordsList(records = it1) }
+                        is ResultState.Success -> it.data?.let { entity -> ScoreRecordsList(records = entity){ entity ->
+                            val json = entityAdapter.toJson(entity)
+                            navController.navigate(NavigationScreens.EntityDetailScreen.route + "/" + json)
+                        } }
                     }
                 }
             }
@@ -92,7 +101,7 @@ fun LoadingScreen(){
 
 
 @Composable
-fun ScoreRecordsList(records: List<Participant>){
+fun ScoreRecordsList(records: List<Participant>, onParticipantClick: (Participant)->Unit){
     val bySport = records.groupBy { it.sport }
     Column(
         modifier = Modifier
@@ -103,7 +112,9 @@ fun ScoreRecordsList(records: List<Participant>){
             SportHeader(sport = sport)
             Column(Modifier.padding(10.dp)) {
                 list.forEach {
-                    ParticipantPreview(participant = it)
+                    ParticipantPreview(participant = it){
+                        onParticipantClick(it)
+                    }
                 }
             }
         }
@@ -129,15 +140,20 @@ fun SportHeader(sport: String){
 }
 
 @Composable
-fun ParticipantPreview(participant: Participant){
+fun ParticipantPreview(participant: Participant, onClick: ()->Unit){
     Row(
         modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
             .fillMaxWidth()
-            .padding(5.dp)
+            .clickable {
+                onClick()
+            }
+            .padding(horizontal = 10.dp, vertical = 5.dp)
     ){
         var model:Any = participant.defaultImageSource
-        if(participant.images.isNotEmpty())
-            model = participant.getImagePath(0)
+        participant.image?.let {
+            model = participant.getImagePath()
+        }
 
         AsyncImage(model = model,
             contentDescription = null,

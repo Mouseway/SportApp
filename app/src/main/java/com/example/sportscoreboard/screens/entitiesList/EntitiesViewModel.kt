@@ -1,4 +1,4 @@
-package com.example.sportscoreboard.screens.scoreboard
+package com.example.sportscoreboard.screens.entitiesList
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
@@ -12,7 +12,7 @@ import com.example.sportscoreboard.domain.filters.ParticipantFilter
 import com.example.sportscoreboard.others.Constants
 import kotlinx.coroutines.launch
 
-class ParticipantsViewModel(private val repository: ParticipantsRepository) : ViewModel() {
+class EntitiesViewModel(private val repository: ParticipantsRepository) : ViewModel() {
 
     private val _scoreRecords: MutableLiveData<ResultState<List<Participant>>> = MutableLiveData(ResultState.Loading(isLoading = false))
     val scoreRecords: LiveData<ResultState<List<Participant>>> = _scoreRecords
