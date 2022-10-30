@@ -2,44 +2,55 @@ package com.example.sportscoreboard.others.composable
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
-import com.example.sportscoreboard.R
+import androidx.compose.ui.unit.sp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Searchbar(value: String, onTextChange: (String)->Unit, onSearchClick: ()->Unit){
-    val placeholdersColor = MaterialTheme.colors.onPrimary.copy(alpha = ContentAlpha.medium)
+    val placeholdersColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = ContentAlpha.medium)
     TextField(
         value = value,
         onValueChange = {
             onTextChange(it)
         },
+        textStyle = TextStyle(fontSize = 18.sp),
         colors = TextFieldDefaults.textFieldColors(
-            cursorColor = placeholdersColor,
-            backgroundColor = Color.Transparent,
-            textColor = MaterialTheme.colors.onPrimary,
-            focusedIndicatorColor = Color.Transparent
+            cursorColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = MaterialTheme.colorScheme.primary,
+            textColor = MaterialTheme.colorScheme.onPrimary,
+            focusedIndicatorColor = Color.Transparent,
+            selectionColors = TextSelectionColors(
+                handleColor = MaterialTheme.colorScheme.secondary,
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
+            ),
+            focusedSupportingTextColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
         ),
+        modifier = Modifier.fillMaxWidth(0.66F),
         placeholder = { Text("Zadejte hledaný text", color = placeholdersColor) },
-        modifier = Modifier
-            .fillMaxWidth(),
         trailingIcon = {
             if(value.isNotEmpty())
                 IconButton({
                     onTextChange("")
                 }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.close),
+                        imageVector = Icons.Filled.Close,
                         contentDescription = "close",
-                        tint = placeholdersColor,
-                        modifier = Modifier.padding(17.dp)
                     )
                 }
         },

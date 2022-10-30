@@ -40,7 +40,9 @@ fun Navigation(){
         ) { entry ->
             val json:String = entry.arguments?.getString("entity") ?: ""
             val entity: Entity? = entityAdapter.fromJson(json)
-            entity?.let { EntityDetailScreen(entity) }
+            entity?.let { EntityDetailScreen(entity){
+                navController.popBackStack()
+            } }
         }
     }
 }

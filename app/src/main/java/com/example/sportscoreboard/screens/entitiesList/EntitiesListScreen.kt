@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -21,17 +24,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.sportscoreboard.domain.Entity
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.filters.EntityFilter
-import com.example.sportscoreboard.navigation.NavigationScreens
 import com.example.sportscoreboard.others.composable.Searchbar
-import com.squareup.moshi.JsonAdapter
-import org.koin.androidx.compose.inject
 import org.koin.androidx.compose.viewModel
-import androidx.compose.material.TopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,28 +38,41 @@ fun ParticipantsListScreen(navigateToDetail: (Entity) -> Unit) {
     val scoreRecords = viewModel.scoreRecords.observeAsState()
     val focusManager = LocalFocusManager.current
 
+    val onClickOnSearch = {
+        focusManager.clearFocus()
+        viewModel.filterByText()
+    }
+
+
+
+
     Scaffold(topBar = {
         Column() {
-            TopAppBar(backgroundColor = MaterialTheme.colorScheme.primary
-            ) {
-                Searchbar(viewModel.searchedText,
-                    onSearchClick = {
-                        focusManager.clearFocus()
-                    },
-                    onTextChange = {viewModel.setSearchedText(it)},
-                )
-            }
+            TopAppBar(
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                title = {
+                        EntitiesListTopBar(
+                            searchedText = viewModel.searchedText,
+                            onTextChange = {viewModel.setSearchedText(it)} ,
+                            onSearchClick = {onClickOnSearch()}
+                        )
+                    }
+                    )
 
-
-            Row(Modifier.padding(horizontal = 5.dp)) {
-                EntityFilter.values().forEach {
-                    ParticipantTypeChip(
-                        text = it.title,
-                        onClick = { viewModel.setParticipantType(it) },
-                        selected = (viewModel.participantType == it))
+                    Row(Modifier.padding(horizontal = 5.dp)) {
+                        EntityFilter.values().forEach {
+                            ParticipantTypeChip(
+                                text = it.title,
+                                onClick = { viewModel.setParticipantType(it) },
+                                selected = (viewModel.participantType == it))
+                        }
+                    }
                 }
-            }
-        }
+
     }) { padding ->
         Box(
             Modifier
@@ -78,13 +89,13 @@ fun ParticipantsListScreen(navigateToDetail: (Entity) -> Unit) {
                     .padding(top = 10.dp)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())) {
-                scoreRecords.value?.let {
-                    when(it){
-                        is ResultState.Error -> Log.i("Scoreboard", it.message ?: "Error")
-                        is ResultState.Loading -> if(it.isLoading)  LoadingScreen()
-                        is ResultState.Success -> it.data?.let { entity -> ScoreRecordsList(records = entity){ entity ->
-//                            val json = entityAdapter.toJson(entity)
-                            navigateToDetail(entity)
+                scoreRecords.value?.let { resultState ->
+                    when(resultState){
+                        is ResultState.Error -> Log.i("Scoreboard", resultState.message ?: "Error")
+                        is ResultState.Loading -> if(resultState.isLoading)  LoadingScreen()
+                        is ResultState.Success -> resultState.data?.let { records ->
+                            ScoreRecordsList(records = records){
+                            navigateToDetail(it)
                         } }
                     }
                 }
@@ -194,3 +205,36 @@ fun ParticipantTypeChip(text: String, onClick: ()->Unit, selected: Boolean){
     )
 }
 
+@Composable
+fun EntitiesListTopBar(
+    searchedText: String,
+    onTextChange: (String) -> Unit,
+    onSearchClick: () -> Unit
+){
+    Box(Modifier.fillMaxSize()){
+        Box(Modifier.align(Alignment.CenterStart)){
+            Searchbar(searchedText,
+                onSearchClick = {
+                    onSearchClick ()
+                },
+                onTextChange = {onTextChange(it)},
+            )
+        }
+        Button(
+            onClick = {onSearchClick()},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.align(Alignment.CenterEnd)
+        ) {
+            Text(text = "Search")
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = "Search",
+                modifier = Modifier.padding(start = 5.dp)
+            )
+        }
+    }
+}

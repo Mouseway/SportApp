@@ -32,13 +32,14 @@ class EntitiesViewModel(private val repository: ParticipantsRepositoryI) : ViewM
 
     fun setSearchedText(newText: String){
         _searchedText.value = newText
-        if(_searchedText.value.length >= 2) {
-            loadData()
-        }
     }
 
     fun setParticipantType(type: EntityFilter){
         _participantType.value = type
+        loadData()
+    }
+
+    fun filterByText(){
         loadData()
     }
 

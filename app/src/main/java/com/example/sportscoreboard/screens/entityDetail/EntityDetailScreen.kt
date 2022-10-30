@@ -4,10 +4,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,39 +19,31 @@ import com.example.sportscoreboard.domain.Entity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EntityDetailScreen(entity: Entity){
+fun EntityDetailScreen(entity: Entity, navigateBack: () -> Unit ){
 
     Scaffold(
         topBar = {
-            TopAppBar(backgroundColor = MaterialTheme.colorScheme.primary) {
-
-            }
+            TopAppBar(colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+            navigationIcon = {
+                IconButton(onClick = {navigateBack()}) {
+                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
+            },
+            title = {}
+            )
         }
     )
     { padding ->
         Box(Modifier.padding(padding)) {
             Column(Modifier.padding(20.dp)) {
 
-                Row() {
-                    var model: Any = entity.defaultImageSource
-                    entity.image?.let {
-                        model = entity.getImagePath()
-                    }
+                Row {
 
-                    Box(
-                        Modifier
-                            .border(
-                                width = 2.dp,
-                                color = Color.Gray.copy(alpha = 0.5F),
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                    ) {
-                        AsyncImage(model = model, contentDescription = entity.name + " image", modifier = Modifier
-                            .height(100.dp)
-                            .width(100.dp)
-                            .padding(5.dp)
-                        )
-                    }
+                    EntityImage(entity)
 
                     Box(
                         Modifier
@@ -63,20 +54,8 @@ fun EntityDetailScreen(entity: Entity){
                         Column(
                             Modifier.align(Alignment.CenterStart)
                         ) {
-                            Row(){
-                                Text(
-                                    text = entity.name,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp
-                                )
+                            EntityTitle(entity = entity)
 
-                                Text(
-                                    text = "(${entity.filter.title})",
-                                    fontSize = 16.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
-                                    modifier = Modifier.padding(start = 10.dp)
-                                )
-                            }
                             entity.gender?.let {
                                 Text(text = "Gender: $it")
                             }
@@ -90,3 +69,45 @@ fun EntityDetailScreen(entity: Entity){
         }
     }
 }
+
+@Composable
+fun EntityImage(entity: Entity){
+    var model: Any = entity.defaultImageSource
+    entity.image?.let {
+        model = entity.getImagePath()
+    }
+
+    Box(
+        Modifier
+            .border(
+                width = 2.dp,
+                color = Color.Gray.copy(alpha = 0.5F),
+                shape = RoundedCornerShape(10.dp)
+            )
+    ) {
+        AsyncImage(model = model, contentDescription = entity.name + " image", modifier = Modifier
+            .height(100.dp)
+            .width(100.dp)
+            .padding(5.dp)
+        )
+    }
+}
+
+@Composable
+fun EntityTitle(entity: Entity){
+    Row(){
+        Text(
+            text = entity.name,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
+        )
+
+        Text(
+            text = "(${entity.filter.title})",
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
+            modifier = Modifier.padding(start = 10.dp)
+        )
+    }
+}
+

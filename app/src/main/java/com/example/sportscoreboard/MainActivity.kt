@@ -23,14 +23,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val customTextSelectionColors = TextSelectionColors(
-                        handleColor = MaterialTheme.colorScheme.secondary,
-                        backgroundColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f)
-                    )
-
-                    CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-                        Navigation()
-                    }
+                    Navigation()
                 }
             }
         }
