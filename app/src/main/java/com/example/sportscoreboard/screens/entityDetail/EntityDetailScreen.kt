@@ -3,10 +3,11 @@ package com.example.sportscoreboard.screens.entityDetail
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,14 +16,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.sportscoreboard.domain.Participant
+import com.example.sportscoreboard.domain.Entity
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EntityDetailScreen(entity: Participant){
+fun EntityDetailScreen(entity: Entity){
 
     Scaffold(
         topBar = {
-            TopAppBar() {
+            TopAppBar(backgroundColor = MaterialTheme.colorScheme.primary) {
 
             }
         }
@@ -71,7 +73,7 @@ fun EntityDetailScreen(entity: Participant){
                                 Text(
                                     text = "(${entity.filter.title})",
                                     fontSize = 16.sp,
-                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.8F),
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
                                     modifier = Modifier.padding(start = 10.dp)
                                 )
                             }

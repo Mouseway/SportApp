@@ -24,7 +24,8 @@ fun Searchbar(value: String, onTextChange: (String)->Unit, onSearchClick: ()->Un
         colors = TextFieldDefaults.textFieldColors(
             cursorColor = placeholdersColor,
             backgroundColor = Color.Transparent,
-            textColor = MaterialTheme.colors.onPrimary
+            textColor = MaterialTheme.colors.onPrimary,
+            focusedIndicatorColor = Color.Transparent
         ),
         placeholder = { Text("Zadejte hledaný text", color = placeholdersColor) },
         modifier = Modifier
@@ -49,6 +50,7 @@ fun Searchbar(value: String, onTextChange: (String)->Unit, onSearchClick: ()->Un
             onSearch = {
                 onSearchClick()
             }
-        )
+        ),
+        singleLine = true
     )
 }

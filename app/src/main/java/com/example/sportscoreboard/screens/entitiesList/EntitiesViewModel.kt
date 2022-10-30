@@ -5,24 +5,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.sportscoreboard.data.repositories.ParticipantsRepository
-import com.example.sportscoreboard.domain.Participant
+import com.example.sportscoreboard.data.repositories.ParticipantsRepositoryI
+import com.example.sportscoreboard.domain.Entity
 import com.example.sportscoreboard.domain.ResultState
-import com.example.sportscoreboard.domain.filters.ParticipantFilter
+import com.example.sportscoreboard.domain.filters.EntityFilter
 import com.example.sportscoreboard.others.Constants
 import kotlinx.coroutines.launch
 
-class EntitiesViewModel(private val repository: ParticipantsRepository) : ViewModel() {
+class EntitiesViewModel(private val repository: ParticipantsRepositoryI) : ViewModel() {
 
-    private val _scoreRecords: MutableLiveData<ResultState<List<Participant>>> = MutableLiveData(ResultState.Loading(isLoading = false))
-    val scoreRecords: LiveData<ResultState<List<Participant>>> = _scoreRecords
+    private val _scoreRecords: MutableLiveData<ResultState<List<Entity>>> = MutableLiveData()
+    val scoreRecords: LiveData<ResultState<List<Entity>>>
+        get() = _scoreRecords
 
     private val _searchedText = mutableStateOf(Constants.DEFAULT_SEARCHED_TEXT)
     val searchedText: String
         get() = _searchedText.value
 
-    private val _participantType = mutableStateOf(ParticipantFilter.ALL)
-    val participantType: ParticipantFilter
+    private val _participantType = mutableStateOf(EntityFilter.ALL)
+    val participantType: EntityFilter
         get() = _participantType.value
 
     init {
@@ -31,10 +32,12 @@ class EntitiesViewModel(private val repository: ParticipantsRepository) : ViewMo
 
     fun setSearchedText(newText: String){
         _searchedText.value = newText
-        loadData()
+        if(_searchedText.value.length >= 2) {
+            loadData()
+        }
     }
 
-    fun setParticipantType(type: ParticipantFilter){
+    fun setParticipantType(type: EntityFilter){
         _participantType.value = type
         loadData()
     }

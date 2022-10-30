@@ -14,13 +14,13 @@ data class ParticipantJson(
 )
 
 @JsonClass(generateAdapter = true)
-class ImageJson(
+data class ImageJson(
     val path: String?,
     val variantTypeId: Int?
 )
 
 @JsonClass(generateAdapter = true)
-class SportJson(
+data class SportJson(
     val name: String?
 )
 
@@ -33,11 +33,11 @@ data class TypeJson(
 )
 
 @JsonClass(generateAdapter = true)
-class GenderJson(
+data class GenderJson(
     val name: String?
 )
 
 @JsonClass(generateAdapter = true)
-class CountryJson(
+data class CountryJson(
     val name: String?
 )
