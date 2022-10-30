@@ -3,7 +3,7 @@ package com.example.sportscoreboard.di
 import com.example.sportscoreboard.data.remote.adapters.ParticipantAdapter
 import com.example.sportscoreboard.data.remote.apiDescriptions.ParticipantsApiDescription
 import com.example.sportscoreboard.data.repositories.ParticipantsRepository
-import com.example.sportscoreboard.domain.Participant
+import com.example.sportscoreboard.domain.Entity
 import com.example.sportscoreboard.screens.entitiesList.EntitiesViewModel
 import com.squareup.moshi.Moshi
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -20,7 +20,7 @@ val appModule = module {
     }
 
     factory {
-        get<Moshi>().adapter(Participant::class.java).lenient()
+        get<Moshi>().adapter(Entity::class.java).lenient()
     }
 
     single {
@@ -39,6 +39,6 @@ val appModule = module {
     }
 
     viewModel {
-        EntitiesViewModel(repository = get())
+        EntitiesViewModel(repository = get<ParticipantsRepository>())
     }
 }

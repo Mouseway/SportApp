@@ -1,14 +1,13 @@
 package com.example.sportscoreboard.data.remote.adapters
 
-import android.util.Log
-import com.example.sportscoreboard.domain.Participant
-import com.example.sportscoreboard.domain.filters.ParticipantFilter
+import com.example.sportscoreboard.domain.Entity
+import com.example.sportscoreboard.domain.filters.EntityFilter
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson
 
 class ParticipantAdapter {
     @FromJson
-    fun fromJson(participant: ParticipantJson): Participant{
+    fun fromJson(participant: ParticipantJson): Entity{
 
         val name = participant.name
         val sport = participant.sport.name ?: ""
@@ -17,21 +16,21 @@ class ParticipantAdapter {
         val country = participant.defaultCountry?.name
 
         return when(participant.type?.id){
-            ParticipantFilter.CONTEST.id -> Participant.Contest(
+            EntityFilter.CONTEST.id -> Entity.Contest(
                 _name = name,
                 _sport = sport,
                 _image = image,
                 _gender = gender,
                 _country = country
             )
-            ParticipantFilter.TEAM.id -> Participant.Team(
+            EntityFilter.TEAM.id -> Entity.Team(
                 _name = name,
                 _sport = sport,
                 _image = image,
                 _gender = gender,
                 _country = country
             )
-            else ->Participant.Player(
+            else ->Entity.Player(
                 _name = name,
                 _sport = sport,
                 _image = image,
@@ -42,14 +41,14 @@ class ParticipantAdapter {
     }
 
     @ToJson
-    fun toJson(participant: Participant): ParticipantJson {
+    fun toJson(entity: Entity): ParticipantJson {
         return ParticipantJson(
-            name = participant.name,
-            type = TypeJson(participant.filter.id, participant.filter.title),
-            images = listOf(ImageJson(participant.image, 15)),
-            sport = SportJson(name = participant.name),
-            gender = GenderJson(participant.gender),
-            defaultCountry = CountryJson(participant.country)
+            name = entity.name,
+            type = TypeJson(entity.filter.id, entity.filter.title),
+            images = listOf(ImageJson(entity.image, 15)),
+            sport = SportJson(name = entity.sport),
+            gender = GenderJson(entity.gender),
+            defaultCountry = CountryJson(entity.country)
         )
     }
 }
