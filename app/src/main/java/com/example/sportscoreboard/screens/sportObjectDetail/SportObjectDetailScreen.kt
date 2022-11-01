@@ -11,7 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -41,27 +44,20 @@ fun SportObjectDetailScreen(sportObject: SportObject, navigateBack: () -> Unit )
         Box(Modifier.padding(padding)) {
             Column(Modifier.padding(20.dp)) {
 
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
 
                     SportObjectImage(sportObject)
 
-                    Box(
-                        Modifier
-                            .padding(start = 20.dp)
-                            .height(100.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Column(
-                            Modifier.align(Alignment.CenterStart)
-                        ) {
-                            SportObjectTitle(sportObject = sportObject)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 10.dp )
+                    ){
+                        SportObjectTitle(sportObject = sportObject)
 
-                            sportObject.gender?.let {
-                                Text(text = "Gender: $it")
-                            }
-                            sportObject.country?.let {
-                                Text(text = "Country: $it")
-                            }
+                        sportObject.gender?.let {
+                            Text(text = "Gender: $it")
+                        }
+                        sportObject.country?.let {
+                            Text(text = "Country: $it")
                         }
                     }
                 }
@@ -95,19 +91,21 @@ fun SportObjectImage(sportObject: SportObject){
 
 @Composable
 fun SportObjectTitle(sportObject: SportObject){
-    Row(){
-        Text(
-            text = sportObject.name,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-
-        Text(
-            text = "(${sportObject.filter.title})",
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
-            modifier = Modifier.padding(start = 10.dp)
-        )
-    }
+    Text(
+        buildAnnotatedString {
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)){
+                append(sportObject.name)
+            }
+            withStyle(
+                SpanStyle(
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F)
+                )
+            ){
+                append(" (${sportObject.filter.title})")
+            }
+        }
+    )
 }
+
 

@@ -8,16 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -28,7 +24,9 @@ import coil.compose.AsyncImage
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.SportObject
 import com.example.sportscoreboard.domain.filters.SportObjectTypeFilter
+import com.example.sportscoreboard.others.composable.FavoriteButton
 import com.example.sportscoreboard.others.composable.Searchbar
+import com.example.sportscoreboard.others.composable.TypeChip
 import org.koin.androidx.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +42,6 @@ fun SportObjectListScreen(navigateToDetail: (SportObject) -> Unit) {
         viewModel.sportObjects.observeAsState()
     }
 
-
     val focusManager = LocalFocusManager.current
 
     val onClickOnSearch = {
@@ -53,7 +50,7 @@ fun SportObjectListScreen(navigateToDetail: (SportObject) -> Unit) {
     }
 
     Scaffold(topBar = {
-        Column() {
+        Column {
             TopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -71,7 +68,7 @@ fun SportObjectListScreen(navigateToDetail: (SportObject) -> Unit) {
 
             Row(Modifier.padding(horizontal = 5.dp)) {
                 SportObjectTypeFilter.values().forEach {
-                    SportObjectTypeChip(
+                    TypeChip(
                         text = it.title,
                         onClick = { viewModel.setSportObjectFilter(it) },
                         selected = (typeFilter.value == it)
@@ -185,7 +182,9 @@ fun SportObjectPreview(sportObject: SportObject, onClick: ()->Unit, onFavoriteCl
             .clickable {
                 onClick()
             }
-            .padding(horizontal = 10.dp, vertical = 5.dp)
+            .height(50.dp)
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically
     ){
         var model:Any = sportObject.defaultImageSource
         sportObject.image?.let {
@@ -196,7 +195,6 @@ fun SportObjectPreview(sportObject: SportObject, onClick: ()->Unit, onFavoriteCl
             contentDescription = null,
             error = painterResource(id = sportObject.defaultImageSource),
             modifier = Modifier.height(30.dp))
-
         Text(text = sportObject.name, fontSize = 15.sp, modifier = Modifier.padding(horizontal = 20.dp))
 
         Spacer(
@@ -210,30 +208,6 @@ fun SportObjectPreview(sportObject: SportObject, onClick: ()->Unit, onFavoriteCl
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SportObjectTypeChip(text: String, onClick: ()->Unit, selected: Boolean){
-    FilterChip(
-        selected = selected,
-        onClick = { onClick() },
-        colors = FilterChipDefaults.filterChipColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            labelColor = MaterialTheme.colorScheme.onSurface,
-            selectedContainerColor = MaterialTheme.colorScheme.secondary,
-            selectedLabelColor = MaterialTheme.colorScheme.onSecondary,
-        ),
-        shape = RoundedCornerShape(10.dp),
-        modifier = Modifier.padding(horizontal = 5.dp),
-        label = {
-            Text(text = text)
-        },
-        border = FilterChipDefaults.filterChipBorder(
-            borderWidth = 0.dp,
-            borderColor = Color.Transparent,
-            selectedBorderColor = Color.Transparent
-        )
-    )
-}
 
 @Composable
 fun SportObjectListTopBar(
@@ -241,60 +215,28 @@ fun SportObjectListTopBar(
     onTextChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ){
-
-    Row {
-        Box(
-            Modifier
-                .weight(1F)
-                .fillMaxHeight()
-        ) {
-            Box(
-                Modifier
-                    .align(Alignment.CenterStart)
-                    .fillMaxWidth()){
+    Row(verticalAlignment = Alignment.CenterVertically){
+        Box(modifier = Modifier.weight(1F)){
             Searchbar(
                 searchedText,
                 onSearchClick = {
                     onSearchClick ()
                 },
                 onTextChange = {onTextChange(it)}
-                )
-            }
+            )
         }
-        Box(
-            Modifier
+        Button(
+            onClick = {onSearchClick()},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
                 .wrapContentWidth()
-                .fillMaxHeight()
-        ){
-            Button(
-                onClick = {onSearchClick()},
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .wrapContentWidth()
-                    .padding(10.dp)
-            ) {
-                Text(text = "Search")
-            }
+                .padding(10.dp)
+        ) {
+            Text(text = "Search")
         }
-    }
-}
-
-
-@Composable
-fun FavoriteButton(favorite: Boolean, onClick: () -> Unit){
-    IconButton(onClick = {onClick()}) {
-        val icon = if(favorite) Icons.Filled.Star else Icons.Outlined.StarBorder
-        val tint =
-            if(favorite)
-                Color(0xffffcd00)
-            else
-                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5F)
-
-        Icon(imageVector = icon, contentDescription = "Favorite", tint = tint)
     }
 }
