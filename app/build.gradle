@@ -61,6 +61,8 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.0.0-rc01'
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation("androidx.navigation:navigation-compose:2.5.3")
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
 
     def koinVersion = "3.1.5"
     implementation "io.insert-koin:koin-android:${koinVersion}"
@@ -90,6 +92,13 @@ dependencies {
     def coilVersion = "2.2.1"
     implementation("io.coil-kt:coil:$coilVersion")
     implementation("io.coil-kt:coil-compose:$coilVersion")
+
+
+    def roomVersion = "2.4.3"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
 
     // Testing

@@ -41,7 +41,7 @@ fun Searchbar(value: String, onTextChange: (String)->Unit, onSearchClick: ()->Un
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent
         ),
-        modifier = Modifier.fillMaxWidth(0.66F),
+        modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Zadejte hledaný text", color = placeholdersColor) },
         trailingIcon = {
             if(value.isNotEmpty())

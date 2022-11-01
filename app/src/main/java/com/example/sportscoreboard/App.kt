@@ -2,6 +2,7 @@ package com.example.sportscoreboard
 
 import android.app.Application
 import com.example.sportscoreboard.di.appModule
+import com.example.sportscoreboard.di.sportObjectModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -12,7 +13,7 @@ class App : Application() {
             // declare used Android context
             androidContext(this@App)
             // declare modules
-            modules(appModule)
+            modules(appModule + sportObjectModule)
         }
     }
 }

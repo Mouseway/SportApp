@@ -6,41 +6,41 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.sportscoreboard.domain.Entity
-import com.example.sportscoreboard.screens.entitiesList.ParticipantsListScreen
-import com.example.sportscoreboard.screens.entityDetail.EntityDetailScreen
+import com.example.sportscoreboard.domain.SportObject
+import com.example.sportscoreboard.screens.entitiesList.SportObjectListScreen
+import com.example.sportscoreboard.screens.sportObjectDetail.SportObjectDetailScreen
 import com.squareup.moshi.JsonAdapter
 import org.koin.androidx.compose.inject
 
 @Composable
 fun Navigation(){
     val navController = rememberNavController()
-    val entityAdapter: JsonAdapter<Entity> by inject()
+    val sportObjectAdapter: JsonAdapter<SportObject> by inject()
 
     NavHost(
         navController = navController,
-        startDestination = NavigationScreens.EntitiesListScreen.route
+        startDestination = NavigationScreens.SportObjectsListScreen.route
     ){
         composable(
-            route = NavigationScreens.EntitiesListScreen.route,
+            route = NavigationScreens.SportObjectsListScreen.route,
         ){
-            ParticipantsListScreen(){
-                entity ->
-                    val json = entityAdapter.toJson(entity)
-                    navController.navigate(NavigationScreens.EntityDetailScreen.route + "/" + json)
+            SportObjectListScreen(){
+                sportObject ->
+                    val json = sportObjectAdapter.toJson(sportObject)
+                    navController.navigate(NavigationScreens.SportObjectDetailScreen.route + "/" + json)
             }
         }
         composable(
-            route = NavigationScreens.EntityDetailScreen.route + "/{entity}",
+            route = NavigationScreens.SportObjectDetailScreen.route + "/{sportObject}",
             arguments = listOf(
-                navArgument(name = "entity"){
+                navArgument(name = "sportObject"){
                     type = NavType.StringType
                 }
             )
         ) { entry ->
-            val json:String = entry.arguments?.getString("entity") ?: ""
-            val entity: Entity? = entityAdapter.fromJson(json)
-            entity?.let { EntityDetailScreen(entity){
+            val json:String = entry.arguments?.getString("sportObject") ?: ""
+            val sportObject: SportObject? = sportObjectAdapter.fromJson(json)
+            sportObject?.let { SportObjectDetailScreen(sportObject){
                 navController.popBackStack()
             } }
         }

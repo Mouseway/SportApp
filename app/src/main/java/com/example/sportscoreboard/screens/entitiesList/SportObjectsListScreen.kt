@@ -9,8 +9,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -25,26 +25,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.sportscoreboard.domain.Entity
 import com.example.sportscoreboard.domain.ResultState
-import com.example.sportscoreboard.domain.filters.EntityFilter
+import com.example.sportscoreboard.domain.SportObject
+import com.example.sportscoreboard.domain.filters.SportObjectTypeFilter
 import com.example.sportscoreboard.others.composable.Searchbar
 import org.koin.androidx.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ParticipantsListScreen(navigateToDetail: (Entity) -> Unit) {
-    val viewModel by viewModel<EntitiesViewModel>()
-    val scoreRecords = viewModel.scoreRecords.observeAsState()
+fun SportObjectListScreen(navigateToDetail: (SportObject) -> Unit) {
+    val viewModel by viewModel<SportObjectsViewModel>()
+    val showFavorite = viewModel.showFavorite.observeAsState()
+    val typeFilter = viewModel.sportObjectFilter.observeAsState()
+
+    val data = if(showFavorite.value == true){
+        viewModel.favorite.observeAsState()
+    }else{
+        viewModel.sportObjects.observeAsState()
+    }
+
+
     val focusManager = LocalFocusManager.current
 
     val onClickOnSearch = {
         focusManager.clearFocus()
         viewModel.filterByText()
     }
-
-
-
 
     Scaffold(topBar = {
         Column() {
@@ -55,23 +61,24 @@ fun ParticipantsListScreen(navigateToDetail: (Entity) -> Unit) {
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
                 title = {
-                        EntitiesListTopBar(
-                            searchedText = viewModel.searchedText,
-                            onTextChange = {viewModel.setSearchedText(it)} ,
-                            onSearchClick = {onClickOnSearch()}
-                        )
-                    }
+                    SportObjectListTopBar(
+                        searchedText = viewModel.searchedText,
+                        onTextChange = { viewModel.setSearchedText(it) },
+                        onSearchClick = { onClickOnSearch() }
                     )
-
-                    Row(Modifier.padding(horizontal = 5.dp)) {
-                        EntityFilter.values().forEach {
-                            ParticipantTypeChip(
-                                text = it.title,
-                                onClick = { viewModel.setParticipantType(it) },
-                                selected = (viewModel.participantType == it))
-                        }
-                    }
                 }
+            )
+
+            Row(Modifier.padding(horizontal = 5.dp)) {
+                SportObjectTypeFilter.values().forEach {
+                    SportObjectTypeChip(
+                        text = it.title,
+                        onClick = { viewModel.setSportObjectFilter(it) },
+                        selected = (typeFilter.value == it)
+                    )
+                }
+            }
+        }
 
     }) { padding ->
         Box(
@@ -83,20 +90,28 @@ fun ParticipantsListScreen(navigateToDetail: (Entity) -> Unit) {
                         focusManager.clearFocus()
                     })
                 }
-        ){
+        ) {
             Column(
                 Modifier
                     .padding(top = 10.dp)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())) {
-                scoreRecords.value?.let { resultState ->
-                    when(resultState){
+                    .verticalScroll(rememberScrollState())
+            ) {
+                data.value?.let { resultState ->
+                    when (resultState) {
                         is ResultState.Error -> Log.i("Scoreboard", resultState.message ?: "Error")
-                        is ResultState.Loading -> if(resultState.isLoading)  LoadingScreen()
-                        is ResultState.Success -> resultState.data?.let { records ->
-                            ScoreRecordsList(records = records){
-                            navigateToDetail(it)
-                        } }
+                        is ResultState.Loading -> if (resultState.isLoading) LoadingScreen()
+                        is ResultState.Success -> resultState.data?.let { data ->
+                            SportObjectsList(
+                                sportObjects = data,
+                                onSportObjectClick = {
+                                    navigateToDetail(it)
+                                },
+                                onFavoriteClick = {
+                                    viewModel.swapFavorite(it)
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -117,8 +132,8 @@ fun LoadingScreen(){
 
 
 @Composable
-fun ScoreRecordsList(records: List<Entity>, onParticipantClick: (Entity)->Unit){
-    val bySport = records.groupBy { it.sport }
+fun SportObjectsList(sportObjects: List<SportObject>, onSportObjectClick: (SportObject)->Unit, onFavoriteClick: (SportObject) -> Unit){
+    val bySport = sportObjects.groupBy { it.sport }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -128,9 +143,15 @@ fun ScoreRecordsList(records: List<Entity>, onParticipantClick: (Entity)->Unit){
             SportHeader(sport = sport)
             Column(Modifier.padding(10.dp)) {
                 list.forEach {
-                    ParticipantPreview(entity = it){
-                        onParticipantClick(it)
-                    }
+                    SportObjectPreview(
+                        sportObject = it,
+                        onClick = {
+                            onSportObjectClick(it)
+                        },
+                        onFavoriteClick = {
+                            onFavoriteClick(it)
+                        }
+                    )
                 }
             }
         }
@@ -156,7 +177,7 @@ fun SportHeader(sport: String){
 }
 
 @Composable
-fun ParticipantPreview(entity: Entity, onClick: ()->Unit){
+fun SportObjectPreview(sportObject: SportObject, onClick: ()->Unit, onFavoriteClick: ()->Unit){
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(10.dp))
@@ -166,23 +187,32 @@ fun ParticipantPreview(entity: Entity, onClick: ()->Unit){
             }
             .padding(horizontal = 10.dp, vertical = 5.dp)
     ){
-        var model:Any = entity.defaultImageSource
-        entity.image?.let {
-            model = entity.getImagePath()
+        var model:Any = sportObject.defaultImageSource
+        sportObject.image?.let {
+            model = sportObject.getImagePath()
         }
 
         AsyncImage(model = model,
             contentDescription = null,
-            error = painterResource(id = entity.defaultImageSource),
+            error = painterResource(id = sportObject.defaultImageSource),
             modifier = Modifier.height(30.dp))
 
-        Text(text = entity.name, fontSize = 15.sp, modifier = Modifier.padding(horizontal = 20.dp))
+        Text(text = sportObject.name, fontSize = 15.sp, modifier = Modifier.padding(horizontal = 20.dp))
+
+        Spacer(
+            Modifier
+                .weight(1f)
+                .fillMaxHeight())
+
+        FavoriteButton(favorite = sportObject.favorite) {
+            onFavoriteClick()
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ParticipantTypeChip(text: String, onClick: ()->Unit, selected: Boolean){
+fun SportObjectTypeChip(text: String, onClick: ()->Unit, selected: Boolean){
     FilterChip(
         selected = selected,
         onClick = { onClick() },
@@ -206,35 +236,65 @@ fun ParticipantTypeChip(text: String, onClick: ()->Unit, selected: Boolean){
 }
 
 @Composable
-fun EntitiesListTopBar(
+fun SportObjectListTopBar(
     searchedText: String,
     onTextChange: (String) -> Unit,
     onSearchClick: () -> Unit
 ){
-    Box(Modifier.fillMaxSize()){
-        Box(Modifier.align(Alignment.CenterStart)){
-            Searchbar(searchedText,
+
+    Row {
+        Box(
+            Modifier
+                .weight(1F)
+                .fillMaxHeight()
+        ) {
+            Box(
+                Modifier
+                    .align(Alignment.CenterStart)
+                    .fillMaxWidth()){
+            Searchbar(
+                searchedText,
                 onSearchClick = {
                     onSearchClick ()
                 },
-                onTextChange = {onTextChange(it)},
-            )
+                onTextChange = {onTextChange(it)}
+                )
+            }
         }
-        Button(
-            onClick = {onSearchClick()},
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            ),
-            shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.align(Alignment.CenterEnd)
-        ) {
-            Text(text = "Search")
-            Icon(
-                imageVector = Icons.Filled.Search,
-                contentDescription = "Search",
-                modifier = Modifier.padding(start = 5.dp)
-            )
+        Box(
+            Modifier
+                .wrapContentWidth()
+                .fillMaxHeight()
+        ){
+            Button(
+                onClick = {onSearchClick()},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ),
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .wrapContentWidth()
+                    .padding(10.dp)
+            ) {
+                Text(text = "Search")
+            }
         }
+    }
+}
+
+
+@Composable
+fun FavoriteButton(favorite: Boolean, onClick: () -> Unit){
+    IconButton(onClick = {onClick()}) {
+        val icon = if(favorite) Icons.Filled.Star else Icons.Outlined.StarBorder
+        val tint =
+            if(favorite)
+                Color(0xffffcd00)
+            else
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5F)
+
+        Icon(imageVector = icon, contentDescription = "Favorite", tint = tint)
     }
 }

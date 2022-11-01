@@ -1,24 +1,31 @@
 package com.example.sportscoreboard.data.remote.adapters
 
-import com.example.sportscoreboard.domain.Entity
+import com.example.sportscoreboard.data.remote.entities.*
+import com.example.sportscoreboard.domain.Contest
+import com.example.sportscoreboard.domain.Player
+import com.example.sportscoreboard.domain.SportObject
+import com.example.sportscoreboard.domain.Team
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
 
-internal class EntityAdapterTest {
+internal class SportObjectAdapterTest {
 
-    lateinit var adapter: ParticipantAdapter
+    private lateinit var adapter: SportObjectJsonAdapter
 
-    private val data: List<Pair<Entity,ParticipantJson>> = listOf(
+    private val data: List<Pair<SportObject, SportObjectJson>> = listOf(
         Pair(
-            Entity.Team(
-                _name = "Team Name",
-                _image = "path",
-                _sport = "Football",
-                _gender = "Man",
-                _country = "Albania"
+            Team(
+                id = "qwe",
+                name = "Team Name",
+                image = "path",
+                sport = "Football",
+                gender = "Man",
+                country = "Albania",
+                favorite = true
             ),
-            ParticipantJson(
+            SportObjectJson(
+            id = "qwe",
             name = "Team Name",
             type = TypeJson(
                 id = 2,
@@ -29,17 +36,21 @@ internal class EntityAdapterTest {
             ),
             sport = SportJson("Football"),
             gender = GenderJson("Man"),
-            defaultCountry = CountryJson("Albania")
+            defaultCountry = CountryJson("Albania"),
+            favorite = true
         )),
         Pair(
-            Entity.Player(
-                _name = "Player Name",
-                _image = "asdfghjk",
-                _sport = "Tennis",
-                _gender = "Woman",
-                _country = "Australia"
+            Player(
+                id = "abcd",
+                name = "Player Name",
+                image = "asdfghjk",
+                sport = "Tennis",
+                gender = "Woman",
+                country = "Australia",
+                favorite = false
             ),
-            ParticipantJson(
+            SportObjectJson(
+                id = "abcd",
                 name = "Player Name",
                 type = TypeJson(
                     id = 3,
@@ -50,18 +61,22 @@ internal class EntityAdapterTest {
                 ),
                 sport = SportJson("Tennis"),
                 gender = GenderJson("Woman"),
-                defaultCountry = CountryJson("Australia")
+                defaultCountry = CountryJson("Australia"),
+                favorite = false
             )
         ),
         Pair(
-            Entity.Contest(
-                _name = "Contest Name",
-                _image = "pooodsdmk",
-                _sport = "Shogi",
-                _gender = "Man",
-                _country = "Japan"
+            Contest(
+                id = "zxc",
+                name = "Contest Name",
+                image = "pooodsdmk",
+                gender = "Man",
+                sport = "Shogi",
+                country = "Japan",
+                favorite = true
             ),
-            ParticipantJson(
+            SportObjectJson(
+                id = "zxc",
                 name = "Contest Name",
                 type = TypeJson(
                     id = 1,
@@ -72,7 +87,8 @@ internal class EntityAdapterTest {
                 ),
                 sport = SportJson("Shogi"),
                 gender = GenderJson("Man"),
-                defaultCountry = CountryJson("Japan")
+                defaultCountry = CountryJson("Japan"),
+                favorite = true
             )
         )
     )
@@ -80,7 +96,7 @@ internal class EntityAdapterTest {
 
     @Before
     fun init(){
-        adapter = ParticipantAdapter()
+        adapter = SportObjectJsonAdapter()
     }
 
     @Test
@@ -98,5 +114,4 @@ internal class EntityAdapterTest {
             assertThat(entity).isEqualTo(json)
         }
     }
-
 }

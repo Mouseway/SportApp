@@ -1,4 +1,4 @@
-package com.example.sportscoreboard.screens.entityDetail
+package com.example.sportscoreboard.screens.sportObjectDetail
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -15,11 +15,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.sportscoreboard.domain.Entity
+import com.example.sportscoreboard.domain.SportObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EntityDetailScreen(entity: Entity, navigateBack: () -> Unit ){
+fun SportObjectDetailScreen(sportObject: SportObject, navigateBack: () -> Unit ){
 
     Scaffold(
         topBar = {
@@ -43,7 +43,7 @@ fun EntityDetailScreen(entity: Entity, navigateBack: () -> Unit ){
 
                 Row {
 
-                    EntityImage(entity)
+                    SportObjectImage(sportObject)
 
                     Box(
                         Modifier
@@ -54,12 +54,12 @@ fun EntityDetailScreen(entity: Entity, navigateBack: () -> Unit ){
                         Column(
                             Modifier.align(Alignment.CenterStart)
                         ) {
-                            EntityTitle(entity = entity)
+                            SportObjectTitle(sportObject = sportObject)
 
-                            entity.gender?.let {
+                            sportObject.gender?.let {
                                 Text(text = "Gender: $it")
                             }
-                            entity.country?.let {
+                            sportObject.country?.let {
                                 Text(text = "Country: $it")
                             }
                         }
@@ -71,10 +71,10 @@ fun EntityDetailScreen(entity: Entity, navigateBack: () -> Unit ){
 }
 
 @Composable
-fun EntityImage(entity: Entity){
-    var model: Any = entity.defaultImageSource
-    entity.image?.let {
-        model = entity.getImagePath()
+fun SportObjectImage(sportObject: SportObject){
+    var model: Any = sportObject.defaultImageSource
+    sportObject.image?.let {
+        model = sportObject.getImagePath()
     }
 
     Box(
@@ -85,7 +85,7 @@ fun EntityImage(entity: Entity){
                 shape = RoundedCornerShape(10.dp)
             )
     ) {
-        AsyncImage(model = model, contentDescription = entity.name + " image", modifier = Modifier
+        AsyncImage(model = model, contentDescription = sportObject.name + " image", modifier = Modifier
             .height(100.dp)
             .width(100.dp)
             .padding(5.dp)
@@ -94,16 +94,16 @@ fun EntityImage(entity: Entity){
 }
 
 @Composable
-fun EntityTitle(entity: Entity){
+fun SportObjectTitle(sportObject: SportObject){
     Row(){
         Text(
-            text = entity.name,
+            text = sportObject.name,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
 
         Text(
-            text = "(${entity.filter.title})",
+            text = "(${sportObject.filter.title})",
             fontSize = 16.sp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
             modifier = Modifier.padding(start = 10.dp)

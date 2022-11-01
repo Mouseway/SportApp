@@ -1,11 +1,11 @@
-package com.example.sportscoreboard.screens.entitiesList;
+package com.example.sportscoreboard.screens.entitiesList
 
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.sportscoreboard.data.repositories.fakeRepositories.FakeParticipantsRepository
-import com.example.sportscoreboard.domain.Entity
+import com.example.sportscoreboard.data.repositories.fakeRepositories.FakeSportObjectsRepository
+import com.example.sportscoreboard.domain.SportObject
 import com.example.sportscoreboard.domain.ResultState
-import com.example.sportscoreboard.domain.filters.EntityFilter
+import com.example.sportscoreboard.domain.filters.SportObjectTypeFilter
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,19 +19,19 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class EntitiesViewModelTest {
+class SportObjectsViewModelTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
 
     private val dispatcher = StandardTestDispatcher()
-    lateinit var viewModel: EntitiesViewModel
+    private lateinit var viewModel: SportObjectsViewModel
 
     @Before
     fun init(){
         Dispatchers.setMain(dispatcher)
-        viewModel = EntitiesViewModel(FakeParticipantsRepository())
+        viewModel = SportObjectsViewModel(FakeSportObjectsRepository())
     }
 
     @After
@@ -44,9 +44,9 @@ class EntitiesViewModelTest {
     fun setSearchedText() = runTest {
         val searchedText = "Petr"
 
-        val values = mutableListOf<ResultState<List<Entity>>>()
+        val values = mutableListOf<ResultState<List<SportObject>>>()
 
-        viewModel.scoreRecords.observeForever {
+        viewModel.sportObjects.observeForever {
             values.add(it)
         }
 
@@ -64,24 +64,24 @@ class EntitiesViewModelTest {
 
     @Test
     fun setParticipantType(){
-        EntityFilter.values().forEach { filter ->
+        SportObjectTypeFilter.values().forEach { filter ->
 
-            val values = mutableListOf<ResultState<List<Entity>>>()
+            val values = mutableListOf<ResultState<List<SportObject>>>()
 
-            viewModel.scoreRecords.observeForever {
+            viewModel.sportObjects.observeForever {
                 values.add(it)
             }
 
             viewModel.setSearchedText("")
-            viewModel.setParticipantType(filter)
+            viewModel.setSportObjectFilter(filter)
 
             dispatcher.scheduler.advanceUntilIdle()
 
-            assertThat(viewModel.participantType).isEqualTo(filter)
+            assertThat(viewModel.sportObjectFilter).isEqualTo(filter)
             assertThat(values[1].data).isNotNull()
             assertThat(values[1].data).isNotEmpty()
 
-            if(filter != EntityFilter.ALL){
+            if(filter != SportObjectTypeFilter.ALL){
                 values[1].data?.forEach {
                     assertThat(it.filter).isEqualTo(filter)
                 }
@@ -91,22 +91,22 @@ class EntitiesViewModelTest {
 
     @Test
     fun setParticipantTypeAndText(){
-        val values = mutableListOf<ResultState<List<Entity>>>()
+        val values = mutableListOf<ResultState<List<SportObject>>>()
 
-        viewModel.scoreRecords.observeForever {
+        viewModel.sportObjects.observeForever {
             values.add(it)
         }
 
         val searchedText = "Petr"
-        val filter = EntityFilter.SINGLE_PLAYER
+        val filter = SportObjectTypeFilter.SINGLE_PLAYER
 
         viewModel.setSearchedText(searchedText)
-        viewModel.setParticipantType(filter)
+        viewModel.setSportObjectFilter(filter)
 
         dispatcher.scheduler.advanceUntilIdle()
 
         assertThat(viewModel.searchedText).isEqualTo(searchedText)
-        assertThat(viewModel.participantType).isEqualTo(filter)
+        assertThat(viewModel.sportObjectFilter).isEqualTo(filter)
         assertThat(values[2].data).isNotNull()
         assertThat(values[2].data).isNotEmpty()
 
