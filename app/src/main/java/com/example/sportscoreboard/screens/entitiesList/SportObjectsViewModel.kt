@@ -106,6 +106,11 @@ class SportObjectsViewModel(private val repository: SportObjectsRepositoryI) : V
         }
     }
 
+    fun reload(){
+        loadData()
+    }
+
+
     private fun loadData(){
         viewModelScope.launch {
             if(searchedText.isNotEmpty()){

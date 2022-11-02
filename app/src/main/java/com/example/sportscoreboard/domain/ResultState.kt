@@ -14,7 +14,7 @@ sealed class ResultState <out T> (val status: ApiStatus, val data: T?, val messa
         message = null
     )
 
-    data class Error(val exception: String, val showError: Boolean): ResultState<Nothing>(
+    data class Error(val exception: String): ResultState<Nothing>(
         status = ApiStatus.ERROR,
         data = null,
         message = exception

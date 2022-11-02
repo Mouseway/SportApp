@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">SportScoreboard</string>
+    <string name="enter_text">Enter text</string>
+    <string name="loading_failed">\"Loading data failed. Caused by: \"</string>
+    <string name="try_again">Try again</string>
+    <string name="search">Search</string>
+    <string name="gender">Gender</string>
+    <string name="country">Country</string>
 </resources>

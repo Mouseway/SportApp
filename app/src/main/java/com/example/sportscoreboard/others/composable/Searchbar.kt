@@ -1,22 +1,21 @@
 package com.example.sportscoreboard.others.composable
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
+import com.example.sportscoreboard.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,7 +41,7 @@ fun Searchbar(value: String, onTextChange: (String)->Unit, onSearchClick: ()->Un
             disabledIndicatorColor = Color.Transparent
         ),
         modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text("Zadejte hledaný text", color = placeholdersColor) },
+        placeholder = { Text(stringResource(R.string.enter_text), color = placeholdersColor) },
         trailingIcon = {
             if(value.isNotEmpty())
                 IconButton({

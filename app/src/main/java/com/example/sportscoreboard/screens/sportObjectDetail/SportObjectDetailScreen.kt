@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.sportscoreboard.R
 import com.example.sportscoreboard.domain.SportObject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,10 +56,10 @@ fun SportObjectDetailScreen(sportObject: SportObject, navigateBack: () -> Unit )
                         SportObjectTitle(sportObject = sportObject)
 
                         sportObject.gender?.let {
-                            Text(text = "Gender: $it")
+                            Text(text = stringResource(R.string.gender) + ": $it")
                         }
                         sportObject.country?.let {
-                            Text(text = "Country: $it")
+                            Text(text = stringResource(R.string.country) + ": $it")
                         }
                     }
                 }

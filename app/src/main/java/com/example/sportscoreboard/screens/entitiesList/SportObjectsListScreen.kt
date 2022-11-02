@@ -1,6 +1,5 @@
 package com.example.sportscoreboard.screens.entitiesList
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -17,10 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.sportscoreboard.R
 import com.example.sportscoreboard.domain.ResultState
 import com.example.sportscoreboard.domain.SportObject
 import com.example.sportscoreboard.domain.filters.SportObjectTypeFilter
@@ -96,7 +97,9 @@ fun SportObjectListScreen(navigateToDetail: (SportObject) -> Unit) {
             ) {
                 data.value?.let { resultState ->
                     when (resultState) {
-                        is ResultState.Error -> Log.i("Scoreboard", resultState.message ?: "Error")
+                        is ResultState.Error -> ErrorScreen(resultState.message ?: "") {
+                            viewModel.reload()
+                        }
                         is ResultState.Loading -> if (resultState.isLoading) LoadingScreen()
                         is ResultState.Success -> resultState.data?.let { data ->
                             SportObjectsList(
@@ -154,6 +157,30 @@ fun SportObjectsList(sportObjects: List<SportObject>, onSportObjectClick: (Sport
         }
     }
 }
+
+@Composable
+fun ErrorScreen(message: String, onReloadClick: () -> Unit){
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(30.dp), horizontalAlignment = Alignment.CenterHorizontally){
+        Text(stringResource(R.string.loading_failed) + message)
+        Button(
+            onClick = {onReloadClick()},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ),
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier.padding(vertical = 15.dp)
+        ){
+            Text(text = stringResource(R.string.try_again))
+        }
+    }
+}
+
+
 
 @Composable
 fun SportHeader(sport: String){
@@ -236,7 +263,7 @@ fun SportObjectListTopBar(
                 .wrapContentWidth()
                 .padding(10.dp)
         ) {
-            Text(text = "Search")
+            Text(text = stringResource(R.string.search))
         }
     }
 }

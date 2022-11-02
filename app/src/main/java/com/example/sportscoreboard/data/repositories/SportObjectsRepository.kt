@@ -3,11 +3,11 @@ package com.example.sportscoreboard.data.repositories
 import com.example.sportscoreboard.data.local.room.adapters.SportObjectRoomAdapter
 import com.example.sportscoreboard.data.local.room.daos.SportObjectDao
 import com.example.sportscoreboard.data.remote.apiDescriptions.SportObjectApiDescription
-import com.example.sportscoreboard.domain.SportObject
 import com.example.sportscoreboard.domain.ResultState
+import com.example.sportscoreboard.domain.SportObject
 import com.example.sportscoreboard.domain.filters.SportObjectTypeFilter
-import kotlinx.coroutines.flow.*
-import java.net.SocketTimeoutException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SportObjectsRepository(
     private val apiDescription: SportObjectApiDescription,
@@ -30,11 +30,11 @@ class SportObjectsRepository(
                     emit(ResultState.Success(response.body()))
                 } else {
                     val errorMessage = response.message()
-                    emit(ResultState.Error(errorMessage, true))
+                    emit(ResultState.Error(errorMessage))
                 }
 
-            }catch (e: SocketTimeoutException){
-                emit(ResultState.Error("Failed to connect.", true))
+            }catch (e: Exception){
+                emit(ResultState.Error(e.message ?: ""))
             }
         }
     }
@@ -50,7 +50,7 @@ class SportObjectsRepository(
                     emit(ResultState.Success(_data = data))
                 }
             }catch (e: Exception){
-                emit(ResultState.Error(e.message ?: "", true))
+                emit(ResultState.Error(e.message ?: ""))
             }
         }
     }
