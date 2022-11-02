@@ -1,6 +1,5 @@
 package com.example.sportscoreboard.data.repositories
 
-import android.util.Log
 import com.example.sportscoreboard.data.local.room.adapters.SportObjectRoomAdapter
 import com.example.sportscoreboard.data.local.room.daos.SportObjectDao
 import com.example.sportscoreboard.data.remote.apiDescriptions.SportObjectApiDescription
@@ -48,7 +47,6 @@ class SportObjectsRepository(
                     val data = list.map {
                         entityAdapter.fromRoomEntity(it)
                     }
-                    Log.i("Scoreboard", data.toString())
                     emit(ResultState.Success(_data = data))
                 }
             }catch (e: Exception){
@@ -74,7 +72,5 @@ class SportObjectsRepository(
             listOf(filter)
         }).map { it.id }
     }
-
-
 }
 

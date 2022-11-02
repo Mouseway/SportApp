@@ -1,5 +1,6 @@
 package com.example.sportscoreboard.screens.entitiesList
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import com.example.sportscoreboard.data.repositories.SportObjectsRepositoryI
@@ -58,7 +59,6 @@ class SportObjectsViewModel(private val repository: SportObjectsRepositoryI) : V
                 fun update(){
                     val filter = _sportObjectFilter.value
                     val state = favoriteAll.value ?: return
-
                     value = if(state is ResultState.Success && filter != SportObjectTypeFilter.ALL){
                         val data = state.data?.filter {
                             (it.filter.id == filter?.id)
@@ -108,7 +108,7 @@ class SportObjectsViewModel(private val repository: SportObjectsRepositoryI) : V
 
     private fun loadData(){
         viewModelScope.launch {
-            if(searchedText.isNotBlank()){
+            if(searchedText.isNotEmpty()){
                 _showFavorite.value = false
                 repository.getFilteredSportObjects(
                     _searchedText.value,
